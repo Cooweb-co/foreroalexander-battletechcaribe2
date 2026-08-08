@@ -12,7 +12,12 @@ Chatbot de Telegram que entiende lenguaje natural en español para registrar tus
 - **Presupuesto y alertas**: define tu tope con `/presupuesto 500000` y FinBot te avisa si lo superas.
 - **Persistencia en Supabase** con fallback en memoria para desarrollo local.
 
-- **Interfaz web incluida**: chat oscuro estilo fintech con acciones rápidas (`npm run web`).
+- **Consejos con IA**: `/consejo` analiza tus gastos reales y te da una recomendación concreta.
+- **Deshacer al instante**: _"borra el último"_ elimina tu gasto más reciente (solo el tuyo).
+- **Exportar a CSV**: descarga tus gastos del mes desde el dashboard (RFC 4180, sin inyección de fórmulas).
+- **Interfaz web incluida**: chat + dashboard con gráficos por categoría y tendencia diaria, instalable como PWA.
+
+🌐 **Demo en producción:** https://foreroalexander-battletechcaribe2.vercel.app
 
 ## 🚀 Inicio rápido
 
