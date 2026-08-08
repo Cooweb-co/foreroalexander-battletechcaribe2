@@ -35,6 +35,13 @@ export class MemoryStore {
     });
   }
 
+  async deleteExpense(userId, id) {
+    const index = this.expenses.findIndex((e) => e.user_id === String(userId) && e.id === id);
+    if (index === -1) return false;
+    this.expenses.splice(index, 1);
+    return true;
+  }
+
   async setBudget(userId, amount) {
     this.budgets.set(String(userId), amount);
   }
@@ -79,6 +86,15 @@ export class SupabaseStore {
     if (from) params.append('created_at', `gte.${from}`);
     if (to) params.append('created_at', `lt.${to}`);
     return this.#request(`/expenses?${params}`);
+  }
+
+  async deleteExpense(userId, id) {
+    const params = new URLSearchParams({ id: `eq.${id}`, user_id: `eq.${userId}` });
+    const rows = await this.#request(`/expenses?${params}`, {
+      method: 'DELETE',
+      headers: { Prefer: 'return=representation' },
+    });
+    return Array.isArray(rows) && rows.length > 0;
   }
 
   async setBudget(userId, amount) {

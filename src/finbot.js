@@ -23,6 +23,7 @@ export const WELCOME = [
   'Comandos:',
   '📊 /resumen — tus gastos del mes',
   '💡 /consejo — consejo financiero a tu medida',
+  '🗑️ /borrar — elimina tu último gasto (o di "borra el último")',
   '🎯 /presupuesto 500000 — define tu tope mensual',
   '❓ /ayuda — ver esta guía de nuevo',
 ].join('\n');
@@ -47,6 +48,9 @@ export class FinBot {
     if (/^\/(start|ayuda|help)/.test(text)) return WELCOME;
     if (/^\/resumen/.test(text) || /^resumen$/i.test(text)) return this.summary(userId);
     if (/^\/consejo/.test(text) || /^consejo$/i.test(text)) return this.advice(userId);
+    if (/^\/borrar/.test(text) || /\bborra(r)?\s+(el\s+)?(último|ultimo)\b/i.test(text)) {
+      return this.deleteLast(userId);
+    }
     if (/^\/presupuesto/.test(text) || /^presupuesto\b/i.test(text)) return this.setBudget(userId, text);
 
     return this.registerExpense(userId, text);
@@ -126,6 +130,19 @@ export class FinBot {
           ? `Tu mayor gasto del mes es ${Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][0]} — ahí está tu mejor oportunidad de ahorro.`
           : 'Registra tu primer gasto desde el chat para ver tus estadísticas aquí.'),
     };
+  }
+
+  /** Elimina el gasto más reciente del mes (deshacer errores). */
+  async deleteLast(userId) {
+    const { from, to } = monthRange();
+    const expenses = await this.store.getExpenses(userId, { from, to });
+    if (expenses.length === 0) {
+      return '🤷 No tienes gastos este mes, nada que borrar.';
+    }
+    const last = [...expenses].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
+    const deleted = await this.store.deleteExpense(userId, last.id);
+    if (!deleted) return '😓 No pude borrar el gasto, inténtalo de nuevo.';
+    return `🗑️ Borrado: *${formatMoney(last.amount)}* en *${last.category}* (${last.description}). Como si nunca hubiera pasado 😉`;
   }
 
   /** Consejo personalizado con IA (con fallback local si no hay API key). */
