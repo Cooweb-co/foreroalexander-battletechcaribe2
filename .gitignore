@@ -1,0 +1,12 @@
+# Secretos y configuración local — nunca al repo
+.env
+.env.*
+!.env.example
+
+# Dependencias y artefactos
+node_modules/
+coverage/
+*.log
+
+# Datos locales
+data/
