@@ -149,6 +149,7 @@
       <div class="card">
         <div class="label">Gastado este mes</div>
         <div class="value" id="total">$0</div>
+        <div class="label" id="delta" style="margin-top:8px"></div>
       </div>
       <div class="card">
         <div class="label">Presupuesto mensual</div>
@@ -202,6 +203,17 @@
     document.getElementById('month').textContent = 'Tus finanzas de ' + d.month;
     document.getElementById('total').textContent = money(d.total);
     document.getElementById('tip').textContent = d.tip.replace(/[*_]/g, '');
+
+    const delta = document.getElementById('delta');
+    if (d.prevTotal > 0) {
+      const pct = Math.round(((d.total - d.prevTotal) / d.prevTotal) * 100);
+      delta.textContent = pct <= 0
+        ? `↓ ${Math.abs(pct)}% vs mes anterior (${money(d.prevTotal)}) 🎉`
+        : `↑ ${pct}% vs mes anterior (${money(d.prevTotal)})`;
+      delta.style.color = pct <= 0 ? 'var(--green-dark)' : '#ba1a1a';
+    } else {
+      delta.textContent = 'Sin datos del mes anterior';
+    }
 
     if (d.budget != null) {
       document.getElementById('budget').textContent = money(d.budget);

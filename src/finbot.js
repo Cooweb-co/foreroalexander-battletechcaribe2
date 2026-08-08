@@ -95,11 +95,14 @@ export class FinBot {
   async dashboard(userId) {
     const now = new Date();
     const { from, to } = monthRange(now);
-    const [expenses, budget] = await Promise.all([
+    const prev = monthRange(now, -1);
+    const [expenses, prevExpenses, budget] = await Promise.all([
       this.store.getExpenses(userId, { from, to }),
+      this.store.getExpenses(userId, { from: prev.from, to: prev.to }),
       this.store.getBudget(userId),
     ]);
     const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    const prevTotal = prevExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
     const byCategory = {};
     const byDay = {};
     for (const e of expenses) {
@@ -111,6 +114,7 @@ export class FinBot {
     return {
       month: `${MONTHS_ES[now.getUTCMonth()]} ${now.getUTCFullYear()}`,
       total,
+      prevTotal,
       budget,
       remaining: status.remaining,
       level: status.level,

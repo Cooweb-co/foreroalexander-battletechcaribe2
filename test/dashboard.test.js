@@ -37,3 +37,18 @@ test('dashboard: refleja presupuesto superado', async () => {
   assert.equal(d.level, 'exceeded');
   assert.match(d.tip, /Presupuesto superado/);
 });
+
+test('dashboard: compara contra el mes anterior', async () => {
+  const store = new MemoryStore();
+  const bot = new FinBot(store);
+  const prevMonth = new Date();
+  prevMonth.setUTCMonth(prevMonth.getUTCMonth() - 1, 15);
+  store.expenses.push({
+    id: 999, user_id: 'u1', amount: 100000, category: 'otros',
+    description: 'mes pasado', created_at: prevMonth.toISOString(),
+  });
+  await bot.handleMessage('u1', 'gasté 50.000 en mercado');
+  const d = await bot.dashboard('u1');
+  assert.equal(d.total, 50000);
+  assert.equal(d.prevTotal, 100000);
+});

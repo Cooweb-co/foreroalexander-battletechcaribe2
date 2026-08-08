@@ -2,10 +2,10 @@
  * Lógica de presupuesto mensual y alertas.
  */
 
-/** Rango [inicio, fin) del mes de una fecha, en ISO. */
-export function monthRange(date = new Date()) {
-  const from = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
-  const to = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1));
+/** Rango [inicio, fin) del mes de una fecha, en ISO. offset desplaza en meses (-1 = mes anterior). */
+export function monthRange(date = new Date(), offset = 0) {
+  const from = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset, 1));
+  const to = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset + 1, 1));
   return { from: from.toISOString(), to: to.toISOString() };
 }
 
