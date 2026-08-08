@@ -16,3 +16,4 @@ supabase/.temp/
 
 # Frontend de Stitch (referencia local, no se sube)
 frontend stitch/
+.vercel
