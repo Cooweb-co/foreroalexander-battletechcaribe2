@@ -58,9 +58,17 @@ export function monthlySummary(expenses, budget, monthLabel) {
   return lines.join('\n');
 }
 
-/** Exporta gastos a CSV (RFC 4180: comillas escapadas, CRLF). */
+/**
+ * Exporta gastos a CSV (RFC 4180: comillas escapadas, CRLF).
+ * Los campos que empiezan con = + - @ \t \r se prefijan con ' para
+ * neutralizar inyección de fórmulas al abrir el archivo en Excel/Sheets.
+ */
 export function toCsv(expenses) {
-  const escape = (v) => `"${String(v).replaceAll('"', '""')}"`;
+  const escape = (v) => {
+    let s = String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return `"${s.replaceAll('"', '""')}"`;
+  };
   const rows = [
     ['fecha', 'monto', 'categoria', 'descripcion'],
     ...expenses.map((e) => [e.created_at, e.amount, e.category, e.description]),

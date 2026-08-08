@@ -14,6 +14,15 @@ test('toCsv: cabecera, filas y escape RFC 4180', () => {
   assert.equal(lines.at(-1), ''); // termina en CRLF
 });
 
+test('toCsv: neutraliza inyección de fórmulas de hoja de cálculo', () => {
+  const csv = toCsv([
+    { created_at: '2026-08-08', amount: 100, category: 'otros', description: '=HYPERLINK("http://evil","x")' },
+    { created_at: '2026-08-08', amount: 100, category: 'otros', description: '+SUMA(A1:A9)' },
+  ]);
+  assert.match(csv, /"'=HYPERLINK/);
+  assert.match(csv, /"'\+SUMA/);
+});
+
 test('toCsv: sin gastos solo devuelve cabecera', () => {
   assert.equal(toCsv([]), '"fecha","monto","categoria","descripcion"\r\n');
 });
