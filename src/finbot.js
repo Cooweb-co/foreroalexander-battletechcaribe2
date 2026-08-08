@@ -2,7 +2,7 @@
  * Núcleo conversacional de FinBot, independiente del canal (Telegram, CLI, tests).
  * Recibe un mensaje y devuelve la respuesta en Markdown.
  */
-import { extractExpense } from './ai.js';
+import { extractExpense, getAdvice } from './ai.js';
 import { parseAmount } from './parser.js';
 import { monthRange, evaluateBudget, budgetAlert } from './budget.js';
 import { monthlySummary, formatMoney, toCsv } from './summary.js';
@@ -22,6 +22,7 @@ export const WELCOME = [
   '',
   'Comandos:',
   '📊 /resumen — tus gastos del mes',
+  '💡 /consejo — consejo financiero a tu medida',
   '🎯 /presupuesto 500000 — define tu tope mensual',
   '❓ /ayuda — ver esta guía de nuevo',
 ].join('\n');
@@ -45,6 +46,7 @@ export class FinBot {
 
     if (/^\/(start|ayuda|help)/.test(text)) return WELCOME;
     if (/^\/resumen/.test(text) || /^resumen$/i.test(text)) return this.summary(userId);
+    if (/^\/consejo/.test(text) || /^consejo$/i.test(text)) return this.advice(userId);
     if (/^\/presupuesto/.test(text) || /^presupuesto\b/i.test(text)) return this.setBudget(userId, text);
 
     return this.registerExpense(userId, text);
@@ -124,6 +126,22 @@ export class FinBot {
           ? `Tu mayor gasto del mes es ${Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][0]} — ahí está tu mejor oportunidad de ahorro.`
           : 'Registra tu primer gasto desde el chat para ver tus estadísticas aquí.'),
     };
+  }
+
+  /** Consejo personalizado con IA (con fallback local si no hay API key). */
+  async advice(userId) {
+    const data = await this.dashboard(userId);
+    if (data.total === 0) {
+      return '🤔 Aún no tengo datos tuyos este mes. Registra algunos gastos y te daré un consejo a tu medida.';
+    }
+    const aiAdvice = await getAdvice({
+      mes: data.month,
+      total_gastado: data.total,
+      presupuesto: data.budget,
+      por_categoria: data.byCategory,
+      nivel: data.level,
+    });
+    return aiAdvice ? `💡 ${aiAdvice}` : `💡 ${data.tip}`;
   }
 
   /** CSV con los gastos del mes en curso. */
