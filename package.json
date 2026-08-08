@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node src/index.js",
     "demo": "node demo/cli.js",
+    "web": "node src/server.js",
     "test": "node --test"
   },
   "keywords": ["finanzas", "chatbot", "telegram", "openai", "supabase"],
