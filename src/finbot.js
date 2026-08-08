@@ -95,8 +95,11 @@ export class FinBot {
     ]);
     const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
     const byCategory = {};
+    const byDay = {};
     for (const e of expenses) {
       byCategory[e.category] = (byCategory[e.category] ?? 0) + Number(e.amount);
+      const day = String(e.created_at).slice(0, 10); // YYYY-MM-DD
+      byDay[day] = (byDay[day] ?? 0) + Number(e.amount);
     }
     const status = evaluateBudget(total, budget);
     return {
@@ -106,6 +109,7 @@ export class FinBot {
       remaining: status.remaining,
       level: status.level,
       byCategory,
+      byDay,
       recent: [...expenses]
         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
         .slice(0, 8)
