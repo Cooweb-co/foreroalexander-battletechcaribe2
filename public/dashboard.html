@@ -124,8 +124,13 @@
   </aside>
 
   <main>
-    <h1>Resumen general</h1>
-    <div class="subtitle" id="month">—</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h1>Resumen general</h1>
+        <div class="subtitle" id="month">—</div>
+      </div>
+      <a id="export" href="#" style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px;font-weight:600;color:var(--green);text-decoration:none">⬇️ Exportar CSV</a>
+    </div>
 
     <div class="cards">
       <div class="card">
@@ -168,6 +173,8 @@
   const esc = (s) => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
   const userId = localStorage.getItem('finbot-uid') ??
     (localStorage.setItem('finbot-uid', 'web-' + crypto.randomUUID()), localStorage.getItem('finbot-uid'));
+
+  document.getElementById('export').href = '/api/export?userId=' + encodeURIComponent(userId);
 
   async function load() {
     const res = await fetch('/api/dashboard?userId=' + encodeURIComponent(userId));

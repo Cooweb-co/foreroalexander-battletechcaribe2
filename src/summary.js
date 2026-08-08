@@ -58,6 +58,16 @@ export function monthlySummary(expenses, budget, monthLabel) {
   return lines.join('\n');
 }
 
+/** Exporta gastos a CSV (RFC 4180: comillas escapadas, CRLF). */
+export function toCsv(expenses) {
+  const escape = (v) => `"${String(v).replaceAll('"', '""')}"`;
+  const rows = [
+    ['fecha', 'monto', 'categoria', 'descripcion'],
+    ...expenses.map((e) => [e.created_at, e.amount, e.category, e.description]),
+  ];
+  return rows.map((r) => r.map(escape).join(',')).join('\r\n') + '\r\n';
+}
+
 /** Barra de progreso visual: ▓▓▓▓░░░░░░ */
 export function progressBar(ratio, width = 10) {
   const filled = Math.min(width, Math.round(Math.max(0, ratio) * width));

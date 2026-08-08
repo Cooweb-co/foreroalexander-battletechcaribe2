@@ -5,7 +5,7 @@
 import { extractExpense } from './ai.js';
 import { parseAmount } from './parser.js';
 import { monthRange, evaluateBudget, budgetAlert } from './budget.js';
-import { monthlySummary, formatMoney } from './summary.js';
+import { monthlySummary, formatMoney, toCsv } from './summary.js';
 
 const MONTHS_ES = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -120,6 +120,13 @@ export class FinBot {
           ? `Tu mayor gasto del mes es ${Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][0]} — ahí está tu mejor oportunidad de ahorro.`
           : 'Registra tu primer gasto desde el chat para ver tus estadísticas aquí.'),
     };
+  }
+
+  /** CSV con los gastos del mes en curso. */
+  async exportCsv(userId) {
+    const { from, to } = monthRange();
+    const expenses = await this.store.getExpenses(userId, { from, to });
+    return toCsv(expenses);
   }
 
   async setBudget(userId, text) {

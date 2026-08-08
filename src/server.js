@@ -87,6 +87,26 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (req.method === 'GET' && url.pathname === '/api/export') {
+    try {
+      const userId = String(url.searchParams.get('userId') ?? '');
+      if (!USER_ID_RE.test(userId)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'userId (alfanumérico) es obligatorio' }));
+      }
+      const csv = await finbot.exportCsv(userId);
+      res.writeHead(200, {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="finbot-gastos.csv"',
+      });
+      return res.end(csv);
+    } catch (err) {
+      console.error('Error en /api/export:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'No pude generar el CSV.' }));
+    }
+  }
+
   if (req.method === 'GET') {
     // Estáticos con protección contra path traversal.
     const safePath = normalize(url.pathname).replace(/^(\.\.[/\\])+/, '');
