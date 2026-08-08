@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinBot — Dashboard</title>
+<style>
+  :root {
+    --green: #006c4a;
+    --green-dark: #00855d;
+    --green-soft: #68dba9;
+    --bg: #f2f4f6;
+    --card: #ffffff;
+    --text: #191c1e;
+    --muted: #5c647a;
+    --line: #e0e3e5;
+    --blue: #2170e4;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100dvh;
+  }
+  aside {
+    width: 240px;
+    background: #fafbfc;
+    border-right: 1px solid var(--line);
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+  .brand .logo {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--green);
+    display: grid; place-items: center;
+    color: #fff; font-size: 20px;
+  }
+  .brand b { color: var(--green); font-size: 17px; display: block; }
+  .brand small { color: var(--muted); font-size: 11px; }
+  aside a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  aside a.active { background: #dae2fd; }
+  aside a:hover:not(.active) { background: #eceef0; }
+
+  main { flex: 1; padding: 28px 32px; max-width: 1200px; }
+  h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 22px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .card .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  .card .value { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+  .bar-track { height: 8px; background: var(--line); border-radius: 99px; margin-top: 14px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; background: var(--green-dark); transition: width .6s ease; }
+  .bar-fill.warn { background: #d97706; }
+  .bar-fill.over { background: #ba1a1a; }
+
+  .grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } body { flex-direction: column; } aside { width: 100%; flex-direction: row; overflow-x: auto; align-items: center; } .brand { padding-bottom: 6px; } }
+
+  .chart-card h2, .side h2 { font-size: 17px; font-weight: 700; margin-bottom: 18px; }
+  #chart { display: flex; align-items: flex-end; gap: 20px; height: 260px; padding-top: 10px; }
+  .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+  .col .bar { width: 100%; max-width: 74px; border-radius: 8px 8px 0 0; background: #bcd3f7; transition: height .6s ease; min-height: 4px; }
+  .col:nth-child(2n) .bar { background: #bfe3d0; }
+  .col .cat { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+  .col .amt { font-size: 12px; font-weight: 600; }
+
+  .tip {
+    background: var(--green);
+    color: #f5fff7;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .tip h3 { font-size: 14px; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
+  .tip p { font-size: 14px; line-height: 1.5; }
+  .tip a {
+    display: inline-block; margin-top: 14px;
+    background: #fff; color: var(--green);
+    padding: 8px 16px; border-radius: 10px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+  }
+  .recent { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .recent ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .recent li { display: flex; align-items: center; gap: 12px; }
+  .recent .ico {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #dae2fd; display: grid; place-items: center; font-size: 17px; flex-shrink: 0;
+  }
+  .recent .info { flex: 1; min-width: 0; }
+  .recent .info b { font-size: 14px; display: block; text-transform: capitalize; }
+  .recent .info span { font-size: 12px; color: var(--muted); }
+  .recent .neg { color: #ba1a1a; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+  <aside>
+    <div class="brand">
+      <div class="logo">🤖</div>
+      <div><b>FinBot</b><small>Asesor financiero IA</small></div>
+    </div>
+    <a class="active" href="/dashboard.html">📊 Resumen</a>
+    <a href="/">💬 Chat</a>
+  </aside>
+
+  <main>
+    <h1>Resumen general</h1>
+    <div class="subtitle" id="month">—</div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="label">Gastado este mes</div>
+        <div class="value" id="total">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">Presupuesto mensual</div>
+        <div class="value" id="budget">—</div>
+        <div class="bar-track"><div class="bar-fill" id="budget-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card">
+        <div class="label">Disponible</div>
+        <div class="value" id="remaining">—</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card chart-card">
+        <h2>Gastos por categoría</h2>
+        <div id="chart"><div class="empty">Sin datos todavía — registra gastos desde el 💬 chat.</div></div>
+      </div>
+      <div class="side">
+        <div class="tip">
+          <h3>💡 Consejo de FinBot</h3>
+          <p id="tip">Cargando…</p>
+          <a href="/">Registrar un gasto</a>
+        </div>
+        <div class="recent">
+          <h2>Recientes</h2>
+          <ul id="recent"><li class="empty">Sin movimientos aún.</li></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+  const EMOJI = { comida:'🍽️', transporte:'🚕', mercado:'🛒', entretenimiento:'🎬', salud:'💊', servicios:'💡', ropa:'👕', 'educación':'📚', otros:'📦' };
+  const money = (v) => '$' + Number(v).toLocaleString('es-CO', { maximumFractionDigits: 2 });
+  const esc = (s) => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+  const userId = localStorage.getItem('finbot-uid') ??
+    (localStorage.setItem('finbot-uid', 'web-' + crypto.randomUUID()), localStorage.getItem('finbot-uid'));
+
+  async function load() {
+    const res = await fetch('/api/dashboard?userId=' + encodeURIComponent(userId));
+    const d = await res.json();
+
+    document.getElementById('month').textContent = 'Tus finanzas de ' + d.month;
+    document.getElementById('total').textContent = money(d.total);
+    document.getElementById('tip').textContent = d.tip.replace(/[*_]/g, '');
+
+    if (d.budget != null) {
+      document.getElementById('budget').textContent = money(d.budget);
+      document.getElementById('remaining').textContent = money(Math.max(0, d.remaining));
+      const pct = Math.min(100, Math.round((d.total / d.budget) * 100));
+      const bar = document.getElementById('budget-bar');
+      bar.style.width = pct + '%';
+      bar.className = 'bar-fill' + (d.level === 'exceeded' ? ' over' : d.level === 'warning' ? ' warn' : '');
+    } else {
+      document.getElementById('budget').textContent = 'Sin definir';
+      document.getElementById('remaining').textContent = '—';
+    }
+
+    const entries = Object.entries(d.byCategory).sort((a, b) => b[1] - a[1]);
+    if (entries.length) {
+      const max = entries[0][1];
+      document.getElementById('chart').innerHTML = entries.map(([cat, amt]) => `
+        <div class="col">
+          <div class="amt">${money(amt)}</div>
+          <div class="bar" style="height:${Math.max(4, Math.round((amt / max) * 82))}%"></div>
+          <div class="cat">${EMOJI[cat] ?? '📦'} ${cat}</div>
+        </div>`).join('');
+    }
+
+    if (d.recent.length) {
+      document.getElementById('recent').innerHTML = d.recent.map((e) => `
+        <li>
+          <div class="ico">${EMOJI[e.category] ?? '📦'}</div>
+          <div class="info"><b>${esc(e.description)}</b><span>${new Date(e.created_at).toLocaleString('es-CO', { day:'numeric', month:'short', hour:'numeric', minute:'2-digit' })}</span></div>
+          <div class="neg">−${money(e.amount)}</div>
+        </li>`).join('');
+    }
+  }
+  load();
+  setInterval(load, 15000); // se refresca solo mientras chateas en otra pestaña
+</script>
+</body>
+</html>

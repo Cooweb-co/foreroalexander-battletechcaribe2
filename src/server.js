@@ -69,6 +69,23 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (req.method === 'GET' && url.pathname === '/api/dashboard') {
+    try {
+      const userId = String(url.searchParams.get('userId') ?? '').slice(0, 64);
+      if (!userId.trim()) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'userId es obligatorio' }));
+      }
+      const data = await finbot.dashboard(userId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(data));
+    } catch (err) {
+      console.error('Error en /api/dashboard:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'No pude cargar el dashboard.' }));
+    }
+  }
+
   if (req.method === 'GET') {
     // Estáticos con protección contra path traversal.
     const safePath = normalize(url.pathname).replace(/^(\.\.[/\\])+/, '');

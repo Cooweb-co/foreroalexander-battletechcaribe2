@@ -85,6 +85,43 @@ export class FinBot {
     return monthlySummary(expenses, budget, monthLabel);
   }
 
+  /** Datos crudos del mes para la interfaz web (dashboard). */
+  async dashboard(userId) {
+    const now = new Date();
+    const { from, to } = monthRange(now);
+    const [expenses, budget] = await Promise.all([
+      this.store.getExpenses(userId, { from, to }),
+      this.store.getBudget(userId),
+    ]);
+    const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    const byCategory = {};
+    for (const e of expenses) {
+      byCategory[e.category] = (byCategory[e.category] ?? 0) + Number(e.amount);
+    }
+    const status = evaluateBudget(total, budget);
+    return {
+      month: `${MONTHS_ES[now.getUTCMonth()]} ${now.getUTCFullYear()}`,
+      total,
+      budget,
+      remaining: status.remaining,
+      level: status.level,
+      byCategory,
+      recent: [...expenses]
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+        .slice(0, 8)
+        .map((e) => ({
+        amount: Number(e.amount),
+        category: e.category,
+        description: e.description,
+        created_at: e.created_at,
+      })),
+      tip: budgetAlert(status, formatMoney) ??
+        (expenses.length
+          ? `Tu mayor gasto del mes es ${Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][0]} — ahí está tu mejor oportunidad de ahorro.`
+          : 'Registra tu primer gasto desde el chat para ver tus estadísticas aquí.'),
+    };
+  }
+
   async setBudget(userId, text) {
     const raw = text.replace(/^\/?presupuesto/i, '').trim();
     const amount = parseAmount(raw);
