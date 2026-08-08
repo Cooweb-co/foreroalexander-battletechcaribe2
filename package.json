@@ -8,7 +8,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/server.js",
+    "bot": "node src/index.js",
     "demo": "node demo/cli.js",
     "web": "node src/server.js",
     "test": "node --test"

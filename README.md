@@ -18,8 +18,8 @@ Chatbot de Telegram que entiende lenguaje natural en español para registrar tus
 
 ```bash
 cp .env.example .env   # completa tus credenciales
-npm start              # inicia el bot de Telegram
-npm run web            # interfaz web en http://localhost:3000
+npm start              # interfaz web en http://localhost:3000 (igual que en Vercel)
+npm run bot            # inicia el bot de Telegram
 npm run demo           # modo demo en la terminal (sin credenciales)
 npm test               # corre la suite de tests (23 tests)
 ```
@@ -28,7 +28,8 @@ npm test               # corre la suite de tests (23 tests)
 
 1. **Supabase**: crea un proyecto y ejecuta `supabase/schema.sql` en el SQL Editor (tablas `expenses` y `budgets` con RLS activado).
 2. **Telegram**: crea tu bot con [@BotFather](https://t.me/BotFather) y copia el token.
-3. Completa el `.env` y ejecuta `npm start`. Sin build, sin dependencias: solo Node.js.
+3. Completa el `.env`: `npm run bot` para Telegram, `npm start` para la web. Sin build, sin dependencias: solo Node.js.
+4. **Vercel**: conecta el repo y define `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY` y `OPENAI_MODEL` en Environment Variables. `npm start` sirve la web y las APIs (el bot de Telegram corre aparte, en cualquier servidor).
 
 ## 🏗️ Arquitectura
 
