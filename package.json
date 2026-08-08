@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FinBot — tu asesor financiero personal por Telegram. Registra gastos en lenguaje natural y recibe consejos en tiempo real.",
   "type": "module",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "engines": {
     "node": ">=18"
   },
