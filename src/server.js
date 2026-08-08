@@ -25,6 +25,7 @@ const MIME = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
 };
 const MAX_BODY = 4 * 1024; // los mensajes de chat son cortos

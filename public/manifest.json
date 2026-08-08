@@ -1,0 +1,13 @@
+{
+  "name": "FinBot — Tu Asesor Financiero Personal",
+  "short_name": "FinBot",
+  "description": "Registra gastos en lenguaje natural y cuida tu presupuesto con IA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f4f6",
+  "theme_color": "#006c4a",
+  "lang": "es",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
