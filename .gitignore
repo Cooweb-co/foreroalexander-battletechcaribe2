@@ -13,3 +13,6 @@ data/
 
 # Artefactos de la CLI de Supabase
 supabase/.temp/
+
+# Frontend de Stitch (referencia local, no se sube)
+frontend stitch/

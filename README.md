@@ -12,14 +12,23 @@ Chatbot de Telegram que entiende lenguaje natural en español para registrar tus
 - **Presupuesto y alertas**: define tu tope con `/presupuesto 500000` y FinBot te avisa si lo superas.
 - **Persistencia en Supabase** con fallback en memoria para desarrollo local.
 
+- **Interfaz web incluida**: chat oscuro estilo fintech con acciones rápidas (`npm run web`).
+
 ## 🚀 Inicio rápido
 
 ```bash
 cp .env.example .env   # completa tus credenciales
 npm start              # inicia el bot de Telegram
-npm run demo           # modo demo local (sin Telegram)
-npm test               # corre la suite de tests
+npm run web            # interfaz web en http://localhost:3000
+npm run demo           # modo demo en la terminal (sin credenciales)
+npm test               # corre la suite de tests (23 tests)
 ```
+
+## ☁️ Despliegue
+
+1. **Supabase**: crea un proyecto y ejecuta `supabase/schema.sql` en el SQL Editor (tablas `expenses` y `budgets` con RLS activado).
+2. **Telegram**: crea tu bot con [@BotFather](https://t.me/BotFather) y copia el token.
+3. Completa el `.env` y ejecuta `npm start`. Sin build, sin dependencias: solo Node.js.
 
 ## 🏗️ Arquitectura
 
