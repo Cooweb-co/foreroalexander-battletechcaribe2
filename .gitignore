@@ -10,3 +10,6 @@ coverage/
 
 # Datos locales
 data/
+
+# Artefactos de la CLI de Supabase
+supabase/.temp/
