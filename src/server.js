@@ -28,6 +28,7 @@ const MIME = {
   '.png': 'image/png',
 };
 const MAX_BODY = 4 * 1024; // los mensajes de chat son cortos
+const USER_ID_RE = /^[A-Za-z0-9_-]{1,64}$/; // ningún delimitador llega a la capa de datos
 
 const finbot = new FinBot(createStore());
 
@@ -55,11 +56,11 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && url.pathname === '/api/chat') {
     try {
       const { userId, text } = JSON.parse(await readBody(req));
-      if (typeof text !== 'string' || typeof userId !== 'string' || !userId.trim()) {
+      if (typeof text !== 'string' || typeof userId !== 'string' || !USER_ID_RE.test(userId)) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: 'userId y text son obligatorios' }));
+        return res.end(JSON.stringify({ error: 'userId (alfanumérico) y text son obligatorios' }));
       }
-      const reply = await finbot.handleMessage(userId.slice(0, 64), text.slice(0, 500));
+      const reply = await finbot.handleMessage(userId, text.slice(0, 500));
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ reply }));
     } catch (err) {
@@ -71,10 +72,10 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/api/dashboard') {
     try {
-      const userId = String(url.searchParams.get('userId') ?? '').slice(0, 64);
-      if (!userId.trim()) {
+      const userId = String(url.searchParams.get('userId') ?? '');
+      if (!USER_ID_RE.test(userId)) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: 'userId es obligatorio' }));
+        return res.end(JSON.stringify({ error: 'userId (alfanumérico) es obligatorio' }));
       }
       const data = await finbot.dashboard(userId);
       res.writeHead(200, { 'Content-Type': 'application/json' });

@@ -90,7 +90,8 @@ export class SupabaseStore {
   }
 
   async getBudget(userId) {
-    const rows = await this.#request(`/budgets?user_id=eq.${userId}&select=amount`);
+    const params = new URLSearchParams({ user_id: `eq.${userId}`, select: 'amount' });
+    const rows = await this.#request(`/budgets?${params}`);
     return rows[0]?.amount ?? null;
   }
 }
